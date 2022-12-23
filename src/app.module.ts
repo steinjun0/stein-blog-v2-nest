@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { Movie } from './movies/entities/movie.entity';
-import { MoviesController } from './movies/movies.controller';
-import { MoviesService } from './movies/movies.service';
+import { Category } from './posts/entities/category.entity';
+import { Post } from './posts/entities/post.entity';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -20,13 +19,11 @@ import { MoviesService } from './movies/movies.service';
       username: process.env.username,
       password: process.env.password,
       database: process.env.database,
-      
+      entities: [Post, Category],
       synchronize: false,
     }),
-    TypeOrmModule.forFeature([Movie])
+    PostsModule
   ],
-  controllers: [MoviesController],
-  providers: [MoviesService],
 })
 
 export class AppModule {

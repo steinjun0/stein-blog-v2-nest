@@ -1,7 +1,7 @@
 import { DataSource } from "typeorm"
 import * as dotenv from 'dotenv'
 
-dotenv.config({path: '.development.env'})
+dotenv.config({ path: '.development.env' })
 
 const AppDataSource = new DataSource({
     type: 'mysql',
@@ -12,8 +12,8 @@ const AppDataSource = new DataSource({
     database: process.env.database,
     migrations: ["dist/migrations/*{.ts,.js}"],
     migrationsTableName: "custom_migration_table",
-    entities: ['src/**/*.entity.{js,ts}']
-  })
+    entities: ['dist/src/**/*.entity.{js,ts}']
+})
 
 //   cli: {
 //     migrationsDir: "src/migrations" 
