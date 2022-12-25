@@ -9,7 +9,7 @@ import { PostsModule } from './posts/posts.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.development.env',
+      envFilePath: process.env.NODE_ENV === 'development' ? '.development.env' : '.production.env',
       isGlobal: true,
     }),
     TypeOrmModule.forRoot({
