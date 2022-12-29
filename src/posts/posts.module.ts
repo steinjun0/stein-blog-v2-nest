@@ -4,7 +4,7 @@ import { PostsController } from './posts.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity'
 import { Category } from './entities/category.entity';
-import { File } from './entities/file.entity'
+import { File } from '../file/entities/file.entity'
 import { CategoryController } from './category.controller';
 import { CategoryService } from './category.service';
 

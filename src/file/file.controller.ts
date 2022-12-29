@@ -1,6 +1,6 @@
 import { Bind, Controller, Get, Param, Post, Res, StreamableFile, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { createReadStream, createWriteStream, rename, writeFileSync } from 'fs';
+import { createReadStream, createWriteStream, existsSync, fstat, lstatSync, mkdirSync, rename, writeFileSync } from 'fs';
 import { join } from 'path';
 import { diskStorage } from 'multer'
 
@@ -21,6 +21,9 @@ export class FileController {
             filename(req, file, callback) {
                 console.log(req.params.path)
                 console.log('file.originalname', file.originalname)
+                if (!existsSync('post_files/temp/')) {
+                    mkdirSync('post_files/temp/');
+                }
 
                 callback(null, file.originalname)
             },

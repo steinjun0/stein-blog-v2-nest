@@ -6,7 +6,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Category } from './entities/category.entity';
-import { File } from './entities/file.entity';
+import { File } from '../file/entities/file.entity';
 import { Post } from './entities/post.entity';
 
 @Injectable()
@@ -66,13 +66,14 @@ export class PostsService {
   findAll() {
     return this.postRepository.find(
       {
-        loadRelationIds: true
+        // loadRelationIds: true
+        relations: ['categories', 'files'],
       }
     );
   }
 
   findOne(id: number) {
-    return this.postRepository.findOneBy({ id });
+    return this.postRepository.findOne({ where: { id }, relations: ['categories', 'files'] });
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {

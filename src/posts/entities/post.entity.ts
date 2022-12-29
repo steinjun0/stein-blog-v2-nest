@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Category } from "./category.entity";
-import { File } from "./file.entity"
+import { File } from "../../file/entities/file.entity"
 
 @Entity()
 export class Post {
@@ -13,7 +13,7 @@ export class Post {
     @Column()
     subtitle: string;
 
-    @Column()
+    @Column("text")
     body: string;
 
     @OneToMany((type) => File, (file) => file.post)
