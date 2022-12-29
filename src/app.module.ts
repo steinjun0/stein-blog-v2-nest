@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category } from './posts/entities/category.entity';
-import { Post } from './posts/entities/post.entity';
+// import { Category } from './posts/entities/category.entity';
+// import { Post } from './posts/entities/post.entity';
+// import { File } from './posts/entities/file.entity';
 import { PostsModule } from './posts/posts.module';
 import { FileModule } from './file/file.module';
 
@@ -20,7 +21,8 @@ import { FileModule } from './file/file.module';
       username: process.env.username,
       password: process.env.password,
       database: process.env.database,
-      entities: [Post, Category],
+      // entities: [Post, Category, File],
+      autoLoadEntities: true,
       synchronize: false,
     }),
     PostsModule,

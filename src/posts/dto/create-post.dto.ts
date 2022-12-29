@@ -16,4 +16,8 @@ export class CreatePostDto {
     @IsOptional()
     @IsArray()
     readonly categories: Array<number>
+
+    @IsOptional()
+    @IsArray()
+    readonly files: Array<string>
 }
