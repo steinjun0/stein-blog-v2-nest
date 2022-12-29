@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { rename } from 'fs';
 import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -23,7 +24,7 @@ export class PostsService {
     post.subtitle = createPostDto.subtitle;
     post.body = createPostDto.body;
     post.categories = []
-    console.log(createPostDto.categories)
+
 
     for (const categoryId of createPostDto.categories) {
       const category = await this.categoryRepository.findOneBy({ id: categoryId })
@@ -31,7 +32,17 @@ export class PostsService {
         post.categories.push(category)
     }
 
-    return this.postRepository.save(post);
+    const resPromise = this.postRepository.save(post)
+
+    resPromise.then((res) => {
+      rename('post_files/temp', `post_files/${res.id}`, function (err) {
+        if (err) {
+          console.log(err)
+        }
+      })
+    })
+
+    return resPromise;
   }
 
   findAll() {
