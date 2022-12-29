@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from './posts/entities/category.entity';
 import { Post } from './posts/entities/post.entity';
 import { PostsModule } from './posts/posts.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { PostsModule } from './posts/posts.module';
       entities: [Post, Category],
       synchronize: false,
     }),
-    PostsModule
+    PostsModule,
+    FileModule
   ],
 })
 
