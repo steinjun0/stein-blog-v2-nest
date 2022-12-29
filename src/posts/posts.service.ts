@@ -6,6 +6,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Category } from './entities/category.entity';
+import { File } from './entities/file.entity';
 import { Post } from './entities/post.entity';
 
 @Injectable()
@@ -16,6 +17,9 @@ export class PostsService {
 
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+
+    @InjectRepository(File)
+    private fileRepository: Repository<File>,
   ) { }
 
   async create(createPostDto: CreatePostDto) {
@@ -23,7 +27,8 @@ export class PostsService {
     post.title = createPostDto.title;
     post.subtitle = createPostDto.subtitle;
     post.body = createPostDto.body;
-    post.categories = []
+    post.files = [];
+    post.categories = [];
 
 
     for (const categoryId of createPostDto.categories) {
@@ -32,17 +37,30 @@ export class PostsService {
         post.categories.push(category)
     }
 
-    const resPromise = this.postRepository.save(post)
+    const postRes = await this.postRepository.save(post)
 
-    resPromise.then((res) => {
-      rename('post_files/temp', `post_files/${res.id}`, function (err) {
-        if (err) {
-          console.log(err)
-        }
-      })
+    const promiseList = []
+    for (const fileName of createPostDto.files) {
+      const file = new File()
+      file.name = fileName
+      file.post = postRes
+      promiseList.push(this.fileRepository.save(file))
+    }
+
+    rename('post_files/temp', `post_files/${postRes.id}`, function (err) {
+      if (err) {
+        console.log(err)
+      }
     })
 
-    return resPromise;
+    const values = await Promise.all(promiseList)
+
+    const fileRes = []
+    values.forEach((value) => {
+      fileRes.push(value.id)
+    })
+
+    return { postRes: postRes, fileRes: fileRes };
   }
 
   findAll() {
