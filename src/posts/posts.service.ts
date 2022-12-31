@@ -38,6 +38,7 @@ export class PostsService {
     }
 
     const postRes = await this.postRepository.save(post)
+    this.postRepository.update(postRes.id, { body: post.body.replace(/file\/post\/temp/gi, `file/post/${postRes.id}`).replace('/\/\/localhost\:8888\/', 'https://api.blog.steinjun.net') })
 
     const promiseList = []
     for (const fileName of createPostDto.files) {
