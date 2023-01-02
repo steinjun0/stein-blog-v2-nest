@@ -31,10 +31,16 @@ export class PostsService {
     post.categories = [];
 
 
-    for (const categoryId of createPostDto.categories) {
-      const category = await this.categoryRepository.findOneBy({ id: categoryId })
-      if (category !== null)
+    for (const categoryName of createPostDto.categories) {
+      const category = await this.categoryRepository.findOneBy({ name: categoryName })
+      if (category !== null) {
         post.categories.push(category)
+      }
+      else {
+        const tempCategory = new Category()
+        tempCategory.name = categoryName
+        post.categories.push(tempCategory)
+      }
     }
 
     const postRes = await this.postRepository.save(post)
