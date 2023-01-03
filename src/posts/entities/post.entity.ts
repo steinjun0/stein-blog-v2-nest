@@ -16,7 +16,7 @@ export class Post {
     @Column("text")
     body: string;
 
-    @OneToMany((type) => File, (file) => file.post)
+    @OneToMany((type) => File, (file) => file.post, { cascade: true })
     files: File[];
 
     @ManyToMany((type) => Category, (category) => category.posts, { cascade: true })
