@@ -24,6 +24,7 @@ import { FileModule } from './file/file.module';
       // entities: [Post, Category, File],
       autoLoadEntities: true,
       synchronize: false,
+      timezone: 'Asia/Seoul'
     }),
     PostsModule,
     FileModule
