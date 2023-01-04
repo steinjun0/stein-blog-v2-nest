@@ -10,15 +10,12 @@ export class FileService {
             } else {
                 const files = readdirSync(`post_files/${postId}/`)
                 if (files && files.length > 0) {
-                    console.log(`${postId}: there is file`)
                     return `post_files/${postId}/${files[0]}`;
                 } else {
-                    console.log(`${postId}: there is no file`)
                     return 'there is no file'
                 }
             }
         } else {
-            console.log(`${postId}: there is no file`)
             return 'there is no file'
         }
 

@@ -18,7 +18,6 @@ export class FileController {
         if (filePath === 'there is no file') {
             throw new NotFoundException('there is no File')
         } else {
-            console.log('filePath', filePath)
             const file = createReadStream(join(process.cwd(), filePath));
             return new StreamableFile(file)
         }
@@ -36,8 +35,6 @@ export class FileController {
         storage: diskStorage({
             destination: join(process.cwd(), 'post_files/temp/'),
             filename(req, file, callback) {
-                console.log(req.params.path)
-                console.log('file.originalname', file.originalname)
                 if (!existsSync('post_files/temp/')) {
                     mkdirSync('post_files/temp/');
                 }
