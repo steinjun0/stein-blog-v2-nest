@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { rename } from 'fs';
-import { Repository } from 'typeorm';
+import { existsSync, rename, rmdir, rmdirSync } from 'fs';
+import { DataSource, getManager, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -22,6 +22,8 @@ export class PostsService {
 
     @InjectRepository(File)
     private fileRepository: Repository<File>,
+
+    private datasource: DataSource
   ) { }
 
   async updateCategories(categories: string[]) {
@@ -131,7 +133,28 @@ export class PostsService {
     return this.postRepository.findOneBy({ id });
   }
 
-  remove(id: number) {
-    return this.postRepository.delete({ id });
+  async remove(id: number) {
+    const queryRunner = this.datasource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    let res: Promise<any>
+    try {
+      const deletingPost = await this.postRepository.findOneBy({ id })
+      await this.fileRepository.delete({ post: deletingPost })
+      res = this.postRepository.delete({ id });
+      res.then(() => {
+        if (existsSync(`post_files/${id}`)) {
+          rmdirSync(`post_files/${id}`, { recursive: true });
+        }
+
+      })
+
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+      return res
+    }
   }
 }
