@@ -88,13 +88,17 @@ export class PostsService {
     return { postRes: postRes, fileRes: fileRes };
   }
 
-  findAll() {
-    return this.postRepository.find(
+  async findAll(option?: { take?: number, skip?: number }) {
+    const res = await this.postRepository.find(
       {
         // loadRelationIds: true
         relations: ['categories', 'files'],
+        take: option && option.take,
+        skip: option && option.skip
       }
     );
+    res.map(e => e.body = e.body.slice(0, 500))
+    return res
   }
 
   findOne(id: number) {

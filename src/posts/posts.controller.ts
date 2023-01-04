@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -13,8 +13,13 @@ export class PostsController {
   }
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query('page') page?: number, @Query('take') takeProps?: number) {
+    if (Number.isNaN(page)) {
+      return this.postsService.findAll();
+    } else {
+      const take = takeProps ? takeProps : 10
+      return this.postsService.findAll({ take: take, skip: (page - 1) * take })
+    }
   }
 
   @Get(':id')
