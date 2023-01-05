@@ -13,7 +13,10 @@ export class PostsController {
   }
 
   @Get()
-  findAll(@Query('page') page?: number, @Query('take') takeProps?: number, @Query('tagFilter') tagFilter?: 'All' | 'Study' | 'Engineering' | 'Art' | 'Life' | 'etc') {
+  findAll(
+    @Query('page') page?: number,
+    @Query('take') takeProps?: number,
+    @Query('tagFilter') tagFilter?: 'All' | 'Study' | 'Engineering' | 'Music' | 'Art' | 'etc') {
     if (Number.isNaN(page)) {
       return this.postsService.findAll();
     } else {

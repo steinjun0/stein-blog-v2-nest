@@ -88,12 +88,12 @@ export class PostsService {
     return { postRes: postRes, fileRes: fileRes };
   }
 
-  async findAll(options?: { take?: number, skip?: number, tagFilter?: 'All' | 'Study' | 'Engineering' | 'Art' | 'Life' | 'etc' }) {
-    const tagFilterObject: { Study: string[], Engineering: string[], Art: string[], Life: string[] } = {
-      Study: ['hihi'],
-      Engineering: ['test'],
-      Art: ['art'],
-      Life: ['lift'],
+  async findAll(options?: { take?: number, skip?: number, tagFilter?: 'All' | 'Study' | 'Engineering' | 'Music' | 'Art' | 'etc' }) {
+    const tagFilterObject: { Study: string[], Engineering: string[], Music: string[], Art: string[] } = {
+      Study: ['Study'],
+      Engineering: ['React', 'Next', 'Vue', 'Nuxt', 'Flutter', 'Django', 'Nest', 'Flutter', 'UnrealEngine5', 'Docker', 'Web'],
+      Music: ['Music', 'Compose', 'Recording'],
+      Art: ['Art', 'Video', 'Camera', 'Photo', 'Video'],
     }
     const tagList = ['Study', 'Engineering', 'Art', 'Life']
     const res = await this.postRepository.find(
