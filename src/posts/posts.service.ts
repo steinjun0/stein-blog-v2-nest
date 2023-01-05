@@ -91,10 +91,13 @@ export class PostsService {
   async findAll(option?: { take?: number, skip?: number }) {
     const res = await this.postRepository.find(
       {
+        order: {
+          id: "DESC",
+        },
         // loadRelationIds: true
         relations: ['categories', 'files'],
         take: option && option.take,
-        skip: option && option.skip
+        skip: option && option.skip,
       }
     );
     res.map(e => e.body = e.body.slice(0, 500))
