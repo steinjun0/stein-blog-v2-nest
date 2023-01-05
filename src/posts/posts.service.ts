@@ -96,7 +96,6 @@ export class PostsService {
       Life: ['lift'],
     }
     const tagList = ['Study', 'Engineering', 'Art', 'Life']
-    console.log('...tagList.map(e => tagFilterObject[e])', tagList.map(e => tagFilterObject[e]).flat())
     const res = await this.postRepository.find(
       {
         order: {
@@ -106,7 +105,7 @@ export class PostsService {
         relations: ['categories', 'files'],
         take: options && options.take,
         skip: options && options.skip,
-        where: options.tagFilter !== 'All' && {
+        where: options && !['All', undefined].includes(options.tagFilter) && {
           categories: {
             name: options.tagFilter === 'etc'
               ?
