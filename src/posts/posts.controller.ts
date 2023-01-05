@@ -13,12 +13,12 @@ export class PostsController {
   }
 
   @Get()
-  findAll(@Query('page') page?: number, @Query('take') takeProps?: number) {
+  findAll(@Query('page') page?: number, @Query('take') takeProps?: number, @Query('tagFilter') tagFilter?: 'All' | 'Study' | 'Engineering' | 'Art' | 'Life' | 'etc') {
     if (Number.isNaN(page)) {
       return this.postsService.findAll();
     } else {
       const take = takeProps ? takeProps : 10
-      return this.postsService.findAll({ take: take, skip: (page - 1) * take })
+      return this.postsService.findAll({ take, skip: (page - 1) * take, tagFilter })
     }
   }
 

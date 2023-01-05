@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { existsSync, rename, rmdir, rmdirSync } from 'fs';
-import { DataSource, getManager, Repository } from 'typeorm';
+import { DataSource, getManager, In, Not, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -88,7 +88,15 @@ export class PostsService {
     return { postRes: postRes, fileRes: fileRes };
   }
 
-  async findAll(option?: { take?: number, skip?: number }) {
+  async findAll(options?: { take?: number, skip?: number, tagFilter?: 'All' | 'Study' | 'Engineering' | 'Art' | 'Life' | 'etc' }) {
+    const tagFilterObject: { Study: string[], Engineering: string[], Art: string[], Life: string[] } = {
+      Study: ['hihi'],
+      Engineering: ['test'],
+      Art: ['art'],
+      Life: ['lift'],
+    }
+    const tagList = ['Study', 'Engineering', 'Art', 'Life']
+    console.log('...tagList.map(e => tagFilterObject[e])', tagList.map(e => tagFilterObject[e]).flat())
     const res = await this.postRepository.find(
       {
         order: {
@@ -96,8 +104,17 @@ export class PostsService {
         },
         // loadRelationIds: true
         relations: ['categories', 'files'],
-        take: option && option.take,
-        skip: option && option.skip,
+        take: options && options.take,
+        skip: options && options.skip,
+        where: options.tagFilter !== 'All' && {
+          categories: {
+            name: options.tagFilter === 'etc'
+              ?
+              Not(In(tagList.map(e => tagFilterObject[e]).flat()))
+              :
+              In(tagFilterObject[options.tagFilter])
+          }
+        }
       }
     );
     res.map(e => e.body = e.body.slice(0, 500))
