@@ -26,15 +26,25 @@ export class PostsService {
     private datasource: DataSource
   ) { }
 
-  async updateCategories(categories: string[]) {
+  async updateCategories(categories: string[]): Promise<Category[]> {
+    const promises: Promise<Category>[] = []
     for (const categoryName of categories) {
-      const category = await this.categoryRepository.findOneBy({ name: categoryName })
-      if (category === null) {
-        const tempCategory = new Category()
-        tempCategory.name = categoryName
-        this.categoryRepository.save(tempCategory)
-      }
+      const findPromise = this.categoryRepository.findOneBy({ name: categoryName })
+      promises.push(findPromise.then((category) => {
+        let categoryOrPromise: null | Category | Promise<Category> = category
+        if (category === null) {
+          const tempCategory = new Category()
+          tempCategory.name = categoryName
+          categoryOrPromise = this.categoryRepository.save(tempCategory)
+        }
+        return categoryOrPromise
+      }))
     }
+    const resPromise = Promise.all(promises)
+    resPromise.then((v) => {
+      return [...v]
+    })
+    return resPromise
   }
 
   async updateFiles(post: Post, files: string[]) {
@@ -59,7 +69,7 @@ export class PostsService {
     post.files = [];
     post.categories = [];
 
-    await this.updateCategories(createPostDto.categories)
+    post.categories = await this.updateCategories(createPostDto.categories)
 
     const postRes = await this.postRepository.save(post)
     this.postRepository.update(postRes.id, { body: post.body.replace(/file\/post\/temp/gi, `file/post/${postRes.id}`).replace('/\/\/localhost\:8888\/', 'https://api.blog.steinjun.net') })
@@ -134,26 +144,22 @@ export class PostsService {
     // post.files = [];
     // post.categories = []
     const promiseList: Promise<any>[] = []
-    promiseList.push(this.updateCategories(updatePostDto.categories))
+    promiseList.push(this.updateCategories(updatePostDto.categories).then((categories) => post.categories = categories))
     promiseList.push(this.updateFiles(post, updatePostDto.files))
     post.body.replace(/file\/post\/temp/gi, `file/post/${id}`).replace('/\/\/localhost\:8888\/', 'https://api.blog.steinjun.net')
-    const postRes = this.postRepository.update(id, post)
-    promiseList.push(postRes)
-
-    rename('post_files/temp', `post_files/${id}`, function (err) {
-      if (err) {
-        console.log(err)
-      }
-    })
-
-    await Promise.all(promiseList)
-
-    // const fileRes = []
-    // values.forEach((value) => {
-    //   fileRes.push(value.id)
-    // })
-
-    return this.postRepository.findOneBy({ id });
+    return Promise.all(promiseList)
+      .then(() => {
+        console.log('post', post)
+        this.postRepository.save(post)
+      })
+      .then(() => rename('post_files/temp', `post_files/${id}`, function (err) {
+        if (err) {
+          console.log(err)
+        }
+      }))
+      .then(() => {
+        return this.postRepository.findOneBy({ id })
+      })
   }
 
   async remove(id: number) {
