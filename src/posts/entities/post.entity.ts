@@ -20,7 +20,6 @@ export class Post {
     files: File[];
 
     @ManyToMany((type) => Category, (category) => category.posts, { cascade: true })
-    // @ManyToMany(() => Category, { cascade: true })
     @JoinTable()
     categories: Category[]
 
