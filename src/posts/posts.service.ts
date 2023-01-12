@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { existsSync, rename, rmdir, rmdirSync } from 'fs';
+import { existsSync, rename, renameSync, rmdir, rmdirSync } from 'fs';
 import { DataSource, getManager, In, Not, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -9,6 +9,7 @@ import { Category } from './entities/category.entity';
 import { File } from '../file/entities/file.entity';
 import { Post } from './entities/post.entity';
 
+var mergedirs = require('merge-dirs').default
 
 
 @Injectable()
@@ -72,7 +73,7 @@ export class PostsService {
     post.categories = await this.updateCategories(createPostDto.categories)
 
     const postRes = await this.postRepository.save(post)
-    this.postRepository.update(postRes.id, { body: post.body.replace(/file\/post\/temp/gi, `file/post/${postRes.id}`).replace('/\/\/localhost\:8888\/', 'https://api.blog.steinjun.net') })
+    this.postRepository.update(postRes.id, { body: post.body.replace(/file\/post\/temp/gi, `file/post/${postRes.id}`).replace(/\/\/localhost\:8888/gi, 'https://api.blog.steinjun.net') })
 
     const promiseList = []
     for (const fileName of createPostDto.files) {
@@ -82,11 +83,7 @@ export class PostsService {
       promiseList.push(this.fileRepository.save(file))
     }
 
-    rename('post_files/temp', `post_files/${postRes.id}`, function (err) {
-      if (err) {
-        console.log(err)
-      }
-    })
+    renameSync('post_files/temp', `post_files/${postRes.id}`)
 
     const values = await Promise.all(promiseList)
 
@@ -146,18 +143,15 @@ export class PostsService {
     const promiseList: Promise<any>[] = []
     promiseList.push(this.updateCategories(updatePostDto.categories).then((categories) => post.categories = categories))
     promiseList.push(this.updateFiles(post, updatePostDto.files))
-    post.body.replace(/file\/post\/temp/gi, `file/post/${id}`).replace('/\/\/localhost\:8888\/', 'https://api.blog.steinjun.net')
+    // post.body = post.body.replace(/file\/post\/temp/gi, `file/post/${id}`).replace('/\/\/localhost\:8888\/', 'https://api.blog.steinjun.net')
+    post.body = post.body.replace(/file\/post\/temp/gi, `file/post/${id}`).replace(/\/\/localhost\:8888/gi, 'https://api.blog.steinjun.net')
     return Promise.all(promiseList)
       .then(() => {
         console.log('post', post)
         this.postRepository.save(post)
       })
-      .then(() => rename('post_files/temp', `post_files/${id}`, function (err) {
-        if (err) {
-          console.log(err)
-        }
-      }))
       .then(() => {
+        mergedirs('post_files/temp', `post_files/${id}`)
         return this.postRepository.findOneBy({ id })
       })
   }
