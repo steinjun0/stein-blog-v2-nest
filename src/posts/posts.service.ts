@@ -151,7 +151,8 @@ export class PostsService {
         this.postRepository.save(post)
       })
       .then(() => {
-        mergedirs('post_files/temp', `post_files/${id}`)
+        if (existsSync('post_files/temp'))
+          mergedirs('post_files/temp', `post_files/${id}`)
         return this.postRepository.findOneBy({ id })
       })
   }
