@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-  const whitelist: Array<string> = ['https://blog.steinjun.net', 'https://test.blog.steinjun.net']
+  const whitelist: Array<string> = ['https://blog.steinjun.net', 'https://test.blog.steinjun.net', 'http://dev-next']
   if (process.env.NODE_ENV === 'development')
     whitelist.push('http://localhost:3000')
   app.enableCors({
