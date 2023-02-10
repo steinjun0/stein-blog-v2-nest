@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 // import { File } from './posts/entities/file.entity';
 import { PostsModule } from './posts/posts.module';
 import { FileModule } from './file/file.module';
+import { EtcModule } from './etc/etc.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { FileModule } from './file/file.module';
       timezone: 'Asia/Seoul'
     }),
     PostsModule,
-    FileModule
+    FileModule,
+    EtcModule
   ],
 })
 
