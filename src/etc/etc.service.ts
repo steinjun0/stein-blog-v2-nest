@@ -1,15 +1,15 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import parse from 'node-html-parser';
-import { catchError, map, Observable, tap } from 'rxjs';
-const https = require('https');
+import { catchError, lastValueFrom, map, Observable, tap } from 'rxjs';
 
 @Injectable()
 export class EtcService {
   constructor(private readonly httpService: HttpService) { }
 
   getSolvedProblemsNumber() {
+    const https = require('https');
     return new Promise((resolve) => {
       const result = https.get("https://www.acmicpc.net/user/1142308", function (res) {
         res.setEncoding('utf8');
@@ -28,5 +28,17 @@ export class EtcService {
         })
       })
     })
+  }
+
+  getAuthOfAdmin(accessToken: string): Observable<boolean> {
+    return this.httpService
+      .get('https://kapi.kakao.com/v2/user/me', { headers: { Authorization: `Bearer ${accessToken}` } })
+      .pipe(
+        catchError(e => {
+          throw new HttpException(e.response.data, e.response.status);
+        }),
+        map(response => response.data),
+        map(e => e.id === 2651014525)
+      )
   }
 }

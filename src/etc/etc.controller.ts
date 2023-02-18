@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { EtcService } from './etc.service';
 
 @Controller('etc')
@@ -10,4 +10,8 @@ export class EtcController {
     return this.etcService.getSolvedProblemsNumber()
   }
 
+  @Get('auth/admin')
+  getAuthOfAdmin(@Query('access-token') accessToken: string) {
+    return this.etcService.getAuthOfAdmin(accessToken)
+  }
 }
