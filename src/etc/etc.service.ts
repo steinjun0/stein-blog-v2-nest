@@ -41,4 +41,14 @@ export class EtcService {
         map(e => e.id === 2651014525)
       )
   }
+
+  getSolvedacData(): Observable<AxiosResponse<any>> {
+    return this.httpService
+      .get('https://solved.ac/api/v3/user/show?handle=1142308')
+      // .get('https://solved.ac/profile/1142308', { headers: { Cookie: '__gads=null' } })
+      // .get('https://solved.ac/api/v3/user/history?handle=1142308&topic=solvedCount')
+      .pipe(
+        map(response => response.data),
+      )
+  }
 }

@@ -10,6 +10,11 @@ export class EtcController {
     return this.etcService.getSolvedProblemsNumber()
   }
 
+  @Get('solvedac/data')
+  getSolvedacData() {
+    return this.etcService.getSolvedacData()
+  }
+
   @Get('auth/admin')
   getAuthOfAdmin(@Query('access-token') accessToken: string) {
     return this.etcService.getAuthOfAdmin(accessToken)
