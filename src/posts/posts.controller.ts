@@ -14,10 +14,17 @@ export class PostsController {
 
   @Get()
   findAll(
+    @Query('ids') ids?: number[] | number,
     @Query('page') page?: number,
     @Query('take') takeProps?: number,
     @Query('tagFilter') tagFilter?: 'All' | 'Study' | 'Engineering' | 'Music' | 'Art' | 'etc') {
-    if (Number.isNaN(page)) {
+    if (typeof ids === 'string') {
+      return this.postsService.getPostsByIds([+ids])
+    }
+    else if (typeof ids === 'object') {
+      return this.postsService.getPostsByIds(ids)
+    }
+    else if (Number.isNaN(page)) {
       return this.postsService.findAll();
     } else {
       const take = takeProps ? takeProps : 10

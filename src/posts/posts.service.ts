@@ -9,6 +9,8 @@ import { Category } from './entities/category.entity';
 import { File } from '../file/entities/file.entity';
 import { Post } from './entities/post.entity';
 
+import { marked } from "marked"
+
 var mergedirs = require('merge-dirs').default
 
 
@@ -59,8 +61,6 @@ export class PostsService {
       }
     }
   }
-
-
 
   async create(createPostDto: CreatePostDto) {
     const post = new Post();
@@ -123,7 +123,7 @@ export class PostsService {
         }
       }
     );
-    res.map(e => e.body = e.body.slice(0, 500))
+    res.map(e => e.body = marked.parse(e.body).replace(/<[^>]*>|\n|[\-]|\s\s/g, '').slice(0, 1000))
     return res
   }
 
@@ -181,4 +181,20 @@ export class PostsService {
       return res
     }
   }
+
+  async getPostsByIds(ids: number[]) {
+    const res = await this.postRepository.find(
+      {
+        relations: ['categories'],
+        where: {
+          id: In(ids)
+        }
+      }
+    );
+    res.map(e => {
+      e.body = marked.parse(e.body).replace(/<[^>]*>|\n|[\-]|\s\s/g, '').slice(0, 1000)
+    })
+    return res
+  }
 }
+
