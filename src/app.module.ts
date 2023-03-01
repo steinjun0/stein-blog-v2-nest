@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModule } from './posts/posts.module';
 import { FileModule } from './file/file.module';
 import { EtcModule } from './etc/etc.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { EtcModule } from './etc/etc.module';
     }),
     PostsModule,
     FileModule,
-    EtcModule
+    EtcModule,
+    ChatModule
   ],
 })
 
