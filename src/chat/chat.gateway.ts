@@ -23,26 +23,37 @@ function shuffle(array: Array<any>) {
 @WebSocketGateway({ cors: true })
 export class ChatGateway implements OnGatewayInit, OnGatewayDisconnect, OnGatewayConnection {
   wsClients: Socket[] = [];
+  clientsPositions: string[] = [];
   nicknames: string[] = [
     '강철 남자', '강한 시금치', '망치의 신',
     '착한 거미', '이상한 의사',
-  ]
+  ];
+  presentPositions: {} = [];
   constructor() {
-    shuffle(this.nicknames)
+    shuffle(this.nicknames);
 
   }
 
   @SubscribeMessage('message')
-  handleEvent(@MessageBody() data: string, @ConnectedSocket() client: Socket): void {
-    const clientIndex = this.wsClients.indexOf(client)
+  handleMessage(@MessageBody() data: string, @ConnectedSocket() client: Socket): void {
+    const clientIndex = this.wsClients.indexOf(client);
     for (let i = 0; i < this.wsClients.length; i++) {
-      this.wsClients[i].emit('message', { owner: this.nicknames[clientIndex], value: data })
+      this.wsClients[i].emit('message', { owner: this.nicknames[clientIndex], value: data });
+    }
+  }
+  @SubscribeMessage('pos')
+  handlePos(@MessageBody() data: string, @ConnectedSocket() client: Socket): void {
+    const clientIndex = this.wsClients.indexOf(client);
+    this.clientsPositions[clientIndex] = data;
+    for (let i = 0; i < this.wsClients.length; i++) {
+      const othersPosition = this.clientsPositions.filter((e, index) => index !== i);
+      this.wsClients[i].emit('pos', JSON.stringify(othersPosition));
     }
   }
 
   broadcast(event, value: any) {
     for (const client of this.wsClients) {
-      client.emit(event, value)
+      client.emit(event, value);
     }
   }
 
@@ -52,14 +63,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayDisconnect, OnGatewa
 
   handleConnection(client: Socket, ...args: any[]) {
     if (this.wsClients.length > 5) {
-      client.emit('message', '입장 인원을 초과했습니다')
+      client.emit('message', '입장 인원을 초과했습니다');
     } else {
-      this.wsClients.push(client)
+      this.wsClients.push(client);
+      this.clientsPositions.push(JSON.stringify({ top: 0, left: 0 }));
     }
   }
 
   handleDisconnect(client: any) {
-    this.wsClients.splice(this.wsClients.indexOf(client), 1)
+    const removeIndex = this.wsClients.indexOf(client);
+    this.wsClients.splice(removeIndex, 1);
+    this.clientsPositions.splice(removeIndex, 1);
   }
 
 }
