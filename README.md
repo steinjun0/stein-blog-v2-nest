@@ -4,4 +4,10 @@
 </p>
 
 # Nestjs for **blog.steinjun.net**
-blog.steinjun.net use nestjs for backend.
+This is the backend for the [blog.steinjun.net](https://blog.steinjun.net). It was developed using the NestJS framework, which is built on top of Node.js.
+
+# Features 
++ RESTful API for managing blog posts
++ Database connection and ORM using TypeORM
++ Containerized using Docker and deployed using Docker Compose
++ HTTPS using Let's Encrypt
