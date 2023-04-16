@@ -45,8 +45,14 @@ export class EtcService {
   getSolvedacData(): Observable<AxiosResponse<any>> {
     return this.httpService
       .get('https://solved.ac/api/v3/user/show?handle=1142308')
-      // .get('https://solved.ac/profile/1142308', { headers: { Cookie: '__gads=null' } })
-      // .get('https://solved.ac/api/v3/user/history?handle=1142308&topic=solvedCount')
+      .pipe(
+        map(response => response.data),
+      )
+  }
+
+  getProxy(url: string, config: object): Observable<AxiosResponse<any>> {
+    return this.httpService
+      .get(url,config)
       .pipe(
         map(response => response.data),
       )

@@ -19,4 +19,9 @@ export class EtcController {
   getAuthOfAdmin(@Query('access-token') accessToken: string) {
     return this.etcService.getAuthOfAdmin(accessToken)
   }
+
+  @Get('proxy')
+  getProxy(@Query('url') url: string, @Query('config') config?: string) {
+    return this.etcService.getProxy(url, JSON.parse(config??'{}'))
+  }
 }

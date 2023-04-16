@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpException } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -12,6 +12,7 @@ export class PostsController {
     return this.postsService.create(createPostDto);
   }
 
+
   @Get()
   findAll(
     @Query('ids') ids?: number[] | number,
@@ -19,16 +20,16 @@ export class PostsController {
     @Query('take') takeProps?: number,
     @Query('tagFilter') tagFilter?: 'All' | 'Study' | 'Engineering' | 'Music' | 'Art' | 'etc') {
     if (typeof ids === 'string') {
-      return this.postsService.getPostsByIds([+ids])
+      return this.postsService.getPostsByIds([+ids]);
     }
     else if (typeof ids === 'object') {
-      return this.postsService.getPostsByIds(ids)
+      return this.postsService.getPostsByIds(ids);
     }
     else if (Number.isNaN(page)) {
       return this.postsService.findAll();
     } else {
-      const take = takeProps ? takeProps : 10
-      return this.postsService.findAll({ take, skip: (page - 1) * take, tagFilter })
+      const take = takeProps ? takeProps : 10;
+      return this.postsService.findAll({ take, skip: (page - 1) * take, tagFilter });
     }
   }
 
