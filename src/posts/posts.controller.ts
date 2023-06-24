@@ -22,7 +22,7 @@ export class PostsController {
     if (ids !== undefined) {
       return this.postsService.getPostsByIds(Array.isArray(ids) ? ids : [ids]);
     } else {
-      const take = takeProps ? takeProps : 10;
+      const take = takeProps ? takeProps : undefined;
       return this.postsService.findAll({
         take,
         skip: (page - 1) * take,
