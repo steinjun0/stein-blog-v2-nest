@@ -95,30 +95,18 @@ export class PostsService {
     return { postRes: postRes, fileRes: fileRes };
   }
 
-  async findAll(options?: { take?: number, skip?: number, tagFilter?: 'All' | 'Study' | 'Engineering' | 'Music' | 'Art' | 'etc' }) {
-    const tagFilterObject: { Study: string[], Engineering: string[], Music: string[], Art: string[] } = {
-      Study: ['Study'],
-      Engineering: ['React', 'Next', 'Vue', 'Nuxt', 'Flutter', 'Django', 'Nest', 'Flutter', 'UnrealEngine5', 'Docker', 'Web'],
-      Music: ['Music', 'Compose', 'Recording'],
-      Art: ['Art', 'Video', 'Camera', 'Photo', 'Video'],
-    }
-    const tagList = ['Study', 'Engineering', 'Art', 'Life']
+  async findAll(options?: { take?: number, skip?: number, categoryFilters?: string[] }) {
     const res = await this.postRepository.find(
       {
         order: {
           id: "DESC",
         },
-        // loadRelationIds: true
         relations: ['categories', 'files'],
         take: options && options.take,
-        skip: options && options.skip,
-        where: options && !['All', undefined].includes(options.tagFilter) && {
+        skip: options && (isNaN(options.skip) ? 0 : options.skip),
+        where: options && options.categoryFilters && {
           categories: {
-            name: options.tagFilter === 'etc'
-              ?
-              Not(In(tagList.map(e => tagFilterObject[e]).flat()))
-              :
-              In(tagFilterObject[options.tagFilter])
+            name:In(options.categoryFilters)
           }
         }
       }

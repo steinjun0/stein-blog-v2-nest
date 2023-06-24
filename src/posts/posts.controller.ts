@@ -18,18 +18,18 @@ export class PostsController {
     @Query('ids') ids?: number[] | number,
     @Query('page') page?: number,
     @Query('take') takeProps?: number,
-    @Query('tagFilter') tagFilter?: 'All' | 'Study' | 'Engineering' | 'Music' | 'Art' | 'etc') {
-    if (typeof ids === 'string') {
-      return this.postsService.getPostsByIds([+ids]);
-    }
-    else if (typeof ids === 'object') {
-      return this.postsService.getPostsByIds(ids);
-    }
-    else if (Number.isNaN(page)) {
-      return this.postsService.findAll();
+    @Query('categoryFilters') categoryFilters?: string[] | string) {
+    if (ids !== undefined) {
+      return this.postsService.getPostsByIds(Array.isArray(ids) ? ids : [ids]);
     } else {
       const take = takeProps ? takeProps : 10;
-      return this.postsService.findAll({ take, skip: (page - 1) * take, tagFilter });
+      return this.postsService.findAll({
+        take,
+        skip: (page - 1) * take,
+        categoryFilters: categoryFilters !== undefined ?
+          Array.isArray(categoryFilters) ? categoryFilters : [categoryFilters]
+          : undefined
+      });
     }
   }
 
