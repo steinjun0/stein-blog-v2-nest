@@ -92,6 +92,9 @@ export class PostsService {
       fileRes.push(value.id);
     });
 
+    fetch("https://www.google.com/ping?sitemap=https://blog.steinjun.net/server-sitemap-post.xml");
+    fetch("https://www.google.com/ping?sitemap=https://blog.steinjun.net/sitemap-0.xml");
+    fetch("https://www.google.com/ping?sitemap=https://blog.steinjun.net/sitemap.xml");
     return { postRes: postRes, fileRes: fileRes };
   }
 
@@ -104,9 +107,6 @@ export class PostsService {
       take: options?.take,
       skip: options && (isNaN(options.skip) ? 0 : options.skip),
     };
-
-
-
 
     if (options?.categoryFilters?.length) {
       findOptions.where = {
